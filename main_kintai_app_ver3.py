@@ -58,7 +58,7 @@ if btn_touroku:
         kyuuyo = round(kansan/60/60*jikyu)
         kyuuyo_str = str(kyuuyo)
     #データ読み込み
-    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'出勤時間']=start_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'退勤時間']=finish_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'勤務時間']=kinmu_time_str
@@ -67,12 +67,12 @@ if btn_touroku:
     df['給与']=df['給与'].astype(float)
     df['給与']=df['給与'].round()
     st.dataframe(df) 
-    df.to_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',index=False,encoding='utf_8_sig')
+    df.to_csv('kintai_mari_ver2.csv',index=False,encoding='utf_8_sig')
 if btn_hyouji:
-    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
     st.dataframe(df) 
 if btn_result:
-    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df['勤務時間']=df['勤務時間'].astype(float)
     df=df.set_index('日付')
@@ -85,7 +85,7 @@ if btn_result:
     st.dataframe(df_result)
 
 if btn_result_shitei:
-    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df=df.set_index('日付')
     df=df[['勤務時間']]
