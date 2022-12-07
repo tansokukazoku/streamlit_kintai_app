@@ -11,7 +11,7 @@ st.title('勤怠表')
 
 st.sidebar.write('勤務時間入力')
 
-with st.sidebar.form(key='kintai_form',clear_on_submit=True):
+with st.sidebar.form(key='kintai_form',clear_on_submit=False):
 
     #入力項目----------------------------------------------------------------------------
     #勤務日を入力（勤務日から曜日を算出）
@@ -22,16 +22,16 @@ with st.sidebar.form(key='kintai_form',clear_on_submit=True):
     #退勤時間を入力
     finish_time = st.text_input('退勤時間を入力して下さい(12時30分だったら12:30)')
     #集計したい開始日を入力
-    start_date = st.date_input('集計したい開始日を選択して下さい')
+    start_date = st.date_input('表示　or 集計したい開始日を選択して下さい')
     #集計したい終了日を入力
-    finish_date = st.date_input('集計したい終了日を選択して下さい')
+    finish_date = st.date_input('表示　or 集計したい終了日を選択して下さい')
 
     col1,col2 = st.columns(2)
     with col1:
         btn_touroku = st.form_submit_button('登録')
-        btn_result = st.form_submit_button('結果')
-    with col2:
         btn_hyouji = st.form_submit_button('表示')
+    with col2:
+        btn_hyouji_shitei = st.form_submit_button('日時指定表示')
         btn_result_shitei = st.form_submit_button('日時指定結果')
 
     btn_cancel = st.form_submit_button('キャンセル')
@@ -58,7 +58,7 @@ if btn_touroku:
         kyuuyo = round(kansan/60/60*jikyu)
         kyuuyo_str = str(kyuuyo)
     #データ読み込み
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'出勤時間']=start_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'退勤時間']=finish_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'勤務時間']=kinmu_time_str
@@ -66,26 +66,49 @@ if btn_touroku:
     #タイプ変換
     df['給与']=df['給与'].astype(float)
     df['給与']=df['給与'].round()
+    df = df.fillna(0)
+    df['勤務時間']=df['勤務時間'].astype(float)
+    df['時']=df['勤務時間'].astype('int')
+    df['分']=round((df['勤務時間']-df['時'])*60,0)
+    df['分']=round(df['分'],0)
+    df=df[['日付','曜日', '出勤時間', '退勤時間', '勤務時間', '時', '分', '給与']]
+    df.to_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',index=False,encoding='utf_8_sig')
     st.dataframe(df) 
-    df.to_csv('kintai_mari_ver2.csv',index=False,encoding='utf_8_sig')
+
 if btn_hyouji:
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
-    st.dataframe(df) 
-if btn_result:
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
+    df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
+    df['勤務時間']=df['勤務時間'].astype(float)
+    df = df.fillna(0)
+    df=df.set_index('日付')
+    df['時']=df['勤務時間'].astype('int')
+    df['分']=round((df['勤務時間']-df['時'])*60,0)
+    df['分']=round(df['分'],0)
+    df=df[['曜日', '出勤時間', '退勤時間', '勤務時間', '時', '分', '給与']]
+    year = kinmu_date.year
+    month = kinmu_date.month
+    d=str(year)+'-'+str(month)
+    df_hyouji=df[d]
+    st.dataframe(df_hyouji) 
+
+if btn_hyouji_shitei:
+    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df['勤務時間']=df['勤務時間'].astype(float)
     df=df.set_index('日付')
-    df=df[['勤務時間']]
-    df_result=df.resample('W').sum()
-    df_result['残時間']=round(20-df_result['勤務時間'],2)
-    df_result['時']=df_result['残時間'].astype(int)
-    df_result['分']=round((df_result['残時間']-df_result['時'])*60,0)
-    df_result['分']=df_result['分'].astype(int)
-    st.dataframe(df_result)
+    df = df.fillna(0)
+    df['時']=df['勤務時間'].astype('int')
+    df['分']=round((df['勤務時間']-df['時'])*60,0)
+    df['分']=round(df['分'],0)
+    df=df[['曜日', '出勤時間', '退勤時間', '勤務時間', '時', '分', '給与']]
+    fmt_2='%Y-%m-%d'
+    kaishi_date = start_date.strftime(fmt_2)
+    shuryou_date = finish_date.strftime(fmt_2)
+    df_hyouji_shitei=df[kaishi_date:shuryou_date]
+    st.dataframe(df_hyouji_shitei)
 
 if btn_result_shitei:
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df=df.set_index('日付')
     df=df[['勤務時間']]
@@ -96,14 +119,17 @@ if btn_result_shitei:
     df_result_shitei_ji=df_result_shitei.astype(int)
     df_result_shitei_fun=round((df_result_shitei-df_result_shitei_ji)*60,0)
     df_result_shitei_fun=df_result_shitei_fun.astype(int)
-    '合計勤務時間は、:',df_result_shitei,'時間です。'
-    '合計勤務時間は、：',df_result_shitei_ji,'時間',df_result_shitei_fun,'分です。'
-  
-
-# if st.button('入力'):
-#     kinmu_kyuuyo()
-# else:
-#     st.button('終了')
-# '終了します'
-
+    start_date,'から',finish_date,'までの合計勤務時間は、:',df_result_shitei,'時間です。'
+    start_date,'から',finish_date,'までの合計勤務時間は、：',df_result_shitei_ji,'時間',df_result_shitei_fun,'分です。'
+    
+    df = pd.read_csv(r'C:\Users\rikus\mypythonproject\勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
+    df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
+    df=df.set_index('日付')
+    df=df[['給与']]
+    fmt_2='%Y-%m-%d'
+    kaishi_date = start_date.strftime(fmt_2)
+    shuryou_date = finish_date.strftime(fmt_2)
+    df_kyuuyo_shitei=df[kaishi_date:shuryou_date].sum()
+    df_kyuuyo_shitei=df_kyuuyo_shitei.astype(int)
+    start_date,'から',finish_date,'までの給与合計は、:',df_kyuuyo_shitei,'円です。'
 
