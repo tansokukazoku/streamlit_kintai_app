@@ -59,7 +59,7 @@ if btn_touroku:
         kyuuyo = round(kansan/60/60*jikyu)
         kyuuyo_str = str(kyuuyo)
     #データ読み込み
-    df = pd.read_csv('勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'出勤時間']=start_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'退勤時間']=finish_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'勤務時間']=kinmu_time_str
