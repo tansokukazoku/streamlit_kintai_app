@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import streamlit as st
 import numpy as np
@@ -22,9 +23,9 @@ with st.sidebar.form(key='kintai_form',clear_on_submit=False):
     #退勤時間を入力
     finish_time = st.text_input('退勤時間を入力して下さい(12時30分だったら12:30)')
     #集計したい開始日を入力
-    start_date = st.date_input('表示　or 集計したい開始日を選択して下さい')
+    start_date = st.date_input('表示 or 集計したい開始日を選択して下さい')
     #集計したい終了日を入力
-    finish_date = st.date_input('表示　or 集計したい終了日を選択して下さい')
+    finish_date = st.date_input('表示 or 集計したい終了日を選択して下さい')
 
     col1,col2 = st.columns(2)
     with col1:
@@ -58,7 +59,7 @@ if btn_touroku:
         kyuuyo = round(kansan/60/60*jikyu)
         kyuuyo_str = str(kyuuyo)
     #データ読み込み
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('勤怠表\kintai_mari_ver2.csv',parse_dates=['日付'])
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'出勤時間']=start_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'退勤時間']=finish_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'勤務時間']=kinmu_time_str
@@ -73,7 +74,60 @@ if btn_touroku:
     df['分']=round(df['分'],0)
     df=df[['日付','曜日', '出勤時間', '退勤時間', '勤務時間', '時', '分', '給与']]
     df.to_csv('kintai_mari_ver2.csv',index=False,encoding='utf_8_sig')
-    st.dataframe(df) 
+
+    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
+    df['勤務時間']=df['勤務時間'].astype(float)
+    df=df.set_index('日付')
+    df=df[['曜日','勤務時間','給与']]
+    import datetime
+    #for i in range(6):
+    if youbi == 0:
+        sabun1 = datetime.timedelta(days=0)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=6)
+        x2=kinmu_date + sabun2
+    elif youbi == 1:
+        sabun1 = datetime.timedelta(days=1)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=5)
+        x2=kinmu_date + sabun2
+    elif youbi == 2:
+        sabun1 = datetime.timedelta(days=2)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=4)
+        x2=kinmu_date + sabun2
+    elif youbi == 3:
+        sabun1 = datetime.timedelta(days=3)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=3)
+        x2=kinmu_date + sabun2
+    elif youbi == 4:
+        sabun1 = datetime.timedelta(days=4)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=2)
+        x2=kinmu_date + sabun2
+    elif youbi == 5:
+        sabun1 = datetime.timedelta(days=5)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=1)
+        x2=kinmu_date + sabun2
+    elif youbi == 6:
+        sabun1 = datetime.timedelta(days=6)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=0)
+        x2=kinmu_date + sabun2
+    df_shitei = df[str(x1):str(x2)]
+    df_shitei_1 = df_shitei[['勤務時間']]
+    df_shitei_1 = df_shitei_1[str(x1):str(x2)].sum()
+    df_shitei_1_ji = df_shitei_1.astype(int)
+    df_shitei_1_fun=round((df_shitei_1-df_shitei_1_ji)*60,0)
+    df_shitei_1_fun=df_shitei_1_fun.astype(int)
+    df_shitei_2 = df_shitei[['給与']]
+    df_shitei_2 = df_shitei_2[str(x1):str(x2)].sum()
+    st.dataframe(df_shitei) 
+    kinmu_date,'週の勤務時間合計は、：',df_shitei_1_ji,'時間',df_shitei_1_fun,'分です。'
+    kinmu_date,'週の給与合計は、:',df_shitei_2,'円です。'
 
 if btn_hyouji:
     df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
