@@ -125,7 +125,7 @@ if btn_touroku:
     df_shitei_1_fun=df_shitei_1_fun.astype(int)
     df_shitei_2 = df_shitei[['給与']]
     df_shitei_2 = df_shitei_2[str(x1):str(x2)].sum()
-    st.dataframe(df_shitei) 
+    st.dataframe(df_shitei,800,1130) 
     kinmu_date,'週の勤務時間合計は、：',df_shitei_1_ji,'時間',df_shitei_1_fun,'分です。'
     kinmu_date,'週の給与合計は、:',df_shitei_2,'円です。'
 
@@ -143,7 +143,7 @@ if btn_hyouji:
     month = kinmu_date.month
     d=str(year)+'-'+str(month)
     df_hyouji=df[d]
-    st.dataframe(df_hyouji) 
+    st.dataframe(df_hyouji,800,1130) 
 
 if btn_hyouji_shitei:
     df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
@@ -159,7 +159,7 @@ if btn_hyouji_shitei:
     kaishi_date = start_date.strftime(fmt_2)
     shuryou_date = finish_date.strftime(fmt_2)
     df_hyouji_shitei=df[kaishi_date:shuryou_date]
-    st.dataframe(df_hyouji_shitei)
+    st.dataframe(df_hyouji_shitei,800,1130)
 
 if btn_result_shitei:
     df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
