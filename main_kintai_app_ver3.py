@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 import streamlit as st
+from st_aggrid import AgGrid
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -125,7 +126,8 @@ if btn_touroku:
     df_shitei_1_fun=df_shitei_1_fun.astype(int)
     df_shitei_2 = df_shitei[['給与']]
     df_shitei_2 = df_shitei_2[str(x1):str(x2)].sum()
-    st.dataframe(df_shitei,800,1130) 
+    #AgGrid(df_shitei,theme="blue",fit_columns_on_grid_load=True,fit_columns_on_grid=True,height=1130)
+    st.dataframe(df_shitei) 
     kinmu_date,'週の勤務時間合計は、：',df_shitei_1_ji,'時間',df_shitei_1_fun,'分です。'
     kinmu_date,'週の給与合計は、:',df_shitei_2,'円です。'
 
@@ -143,6 +145,7 @@ if btn_hyouji:
     month = kinmu_date.month
     d=str(year)+'-'+str(month)
     df_hyouji=df[d]
+    #AgGrid(df_hyouji,theme="streamlit",fit_columns_on_grid_load=True,fit_columns_on_grid=True,height=1130)
     st.dataframe(df_hyouji,800,1130) 
 
 if btn_hyouji_shitei:
@@ -159,6 +162,7 @@ if btn_hyouji_shitei:
     kaishi_date = start_date.strftime(fmt_2)
     shuryou_date = finish_date.strftime(fmt_2)
     df_hyouji_shitei=df[kaishi_date:shuryou_date]
+    #AgGrid(df_hyouji_shitei,theme="blue",fit_columns_on_grid_load=True,fit_columns_on_grid=True,height=1130)
     st.dataframe(df_hyouji_shitei,800,1130)
 
 if btn_result_shitei:
