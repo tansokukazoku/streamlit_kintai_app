@@ -80,27 +80,56 @@ if btn_touroku:
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df['勤務時間']=df['勤務時間'].astype(float)
     df=df.set_index('日付')
-    df=df[['曜日','出勤時間', '退勤時間', '勤務時間', '時', '分']]
-    #週の累積時間計算
-    df.loc[df['曜日'] == 'Sun','累積時間（週）']= df['勤務時間']
-    df.loc[df['曜日'] == 'Mon','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
-    df.loc[df['曜日'] == 'Tue','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
-    df.loc[df['曜日'] == 'Wed','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
-    df.loc[df['曜日'] == 'Thu','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
-    df.loc[df['曜日'] == 'Fri','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
-    df.loc[df['曜日'] == 'Sat','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
-    df=df.fillna(0)
-    df['時_累積']=df['累積時間（週）'].astype('int')
-    df['分_累積']=round((df['累積時間（週）']-df['時_累積'])*60,0)
-    df['分_累積']=round(df['分_累積'],0)
-
-    year = kinmu_date.year
-    month = kinmu_date.month
-    d=str(year)+'-'+str(month)
-    d2=str(year)+'-'+str(month+1)
-    df=df[d:d2]
-
-    st.dataframe(df,1000,1000) 
+    df=df[['曜日','勤務時間','給与']]
+    import datetime
+    #for i in range(6):
+    if youbi == 0:
+        sabun1 = datetime.timedelta(days=0)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=6)
+        x2=kinmu_date + sabun2
+    elif youbi == 1:
+        sabun1 = datetime.timedelta(days=1)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=5)
+        x2=kinmu_date + sabun2
+    elif youbi == 2:
+        sabun1 = datetime.timedelta(days=2)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=4)
+        x2=kinmu_date + sabun2
+    elif youbi == 3:
+        sabun1 = datetime.timedelta(days=3)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=3)
+        x2=kinmu_date + sabun2
+    elif youbi == 4:
+        sabun1 = datetime.timedelta(days=4)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=2)
+        x2=kinmu_date + sabun2
+    elif youbi == 5:
+        sabun1 = datetime.timedelta(days=5)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=1)
+        x2=kinmu_date + sabun2
+    elif youbi == 6:
+        sabun1 = datetime.timedelta(days=6)
+        x1=kinmu_date - sabun1
+        sabun2 = datetime.timedelta(days=0)
+        x2=kinmu_date + sabun2
+    df_shitei = df[str(x1):str(x2)]
+    df_shitei_1 = df_shitei[['勤務時間']]
+    df_shitei_1 = df_shitei_1[str(x1):str(x2)].sum()
+    df_shitei_1_ji = df_shitei_1.astype(int)
+    df_shitei_1_fun=round((df_shitei_1-df_shitei_1_ji)*60,0)
+    df_shitei_1_fun=df_shitei_1_fun.astype(int)
+    df_shitei_2 = df_shitei[['給与']]
+    df_shitei_2 = df_shitei_2[str(x1):str(x2)].sum()
+    #AgGrid(df_shitei,theme="blue",fit_columns_on_grid_load=True,fit_columns_on_grid=True,height=1130)
+    st.dataframe(df_shitei) 
+    kinmu_date,'週の勤務時間合計は、：',df_shitei_1_ji,'時間',df_shitei_1_fun,'分です。'
+    kinmu_date,'週の給与合計は、:',df_shitei_2,'円です。'
 
 if btn_hyouji:
     df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
