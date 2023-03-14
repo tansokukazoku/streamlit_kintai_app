@@ -90,9 +90,11 @@ if btn_touroku:
     df.loc[df['曜日'] == 'Fri','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
     df.loc[df['曜日'] == 'Sat','累積時間（週）']= df['勤務時間']+df['累積時間（週）'].shift()
     df=df.fillna(0)
-    df['時_累積']=df['累積時間（週）'].astype('int')
+    df['時_累積']=df['累積時間（週）'].astype('int64')
     df['分_累積']=round((df['累積時間（週）']-df['時_累積'])*60,0)
-    df['分_累積']=round(df['分_累積'],0)
+    df['分']=df['分'].astype(int)
+    df['分_累積']=df['分_累積'].astype(int)
+    df=df.round({'勤務時間':2,'累積時間（週）':2})
 
     year = kinmu_date.year
     month = kinmu_date.month
@@ -100,7 +102,7 @@ if btn_touroku:
     d2=str(year)+'-'+str(month+1)
     df=df[d:d2]
 
-    st.dataframe(df,1000,1000) 
+    st.dataframe(df,800,1000) 
 
 if btn_hyouji:
     df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
@@ -112,6 +114,9 @@ if btn_hyouji:
     df['分']=round((df['勤務時間']-df['時'])*60,0)
     df['分']=round(df['分'],0)
     df=df[['曜日', '出勤時間', '退勤時間', '勤務時間', '時', '分', '給与']]
+    df=df.round({'勤務時間':2})
+    df['給与']=df['給与'].astype(int)
+    df['分']=df['分'].astype(int)
     year = kinmu_date.year
     month = kinmu_date.month
     d=str(year)+'-'+str(month)
@@ -129,6 +134,9 @@ if btn_hyouji_shitei:
     df['分']=round((df['勤務時間']-df['時'])*60,0)
     df['分']=round(df['分'],0)
     df=df[['曜日', '出勤時間', '退勤時間', '勤務時間', '時', '分', '給与']]
+    df=df.round({'勤務時間':2})
+    df['給与']=df['給与'].astype(int)
+    df['分']=df['分'].astype(int)
     fmt_2='%Y-%m-%d'
     kaishi_date = start_date.strftime(fmt_2)
     shuryou_date = finish_date.strftime(fmt_2)
