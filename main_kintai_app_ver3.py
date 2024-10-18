@@ -50,17 +50,17 @@ if btn_touroku:
     import jpholiday
 
     if youbi == 5 or youbi == 6 or jpholiday.is_holiday(kinmu_date):
-        jikyu = 1050                #時給
+        jikyu = 1150                #時給
         kansan = kinmu_time.seconds #秒に換算
         kyuuyo = round(kansan/60/60*jikyu)
         kyuuyo_str = str(kyuuyo)
     else:
-        jikyu = 1000                #時給
+        jikyu = 1100                #時給
         kansan = kinmu_time.seconds #秒に換算
         kyuuyo = round(kansan/60/60*jikyu)
         kyuuyo_str = str(kyuuyo)
     #データ読み込み
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('./勤怠表/kintai_mari_ver2.csv',parse_dates=['日付'])
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'出勤時間']=start_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'退勤時間']=finish_time
     df.loc[df['日付'] == kinmu_date.strftime("%Y-%m-%d"),'勤務時間']=kinmu_time_str
@@ -74,9 +74,9 @@ if btn_touroku:
     df['分']=round((df['勤務時間']-df['時'])*60,0)
     df['分']=round(df['分'],0)
     df=df[['日付','曜日', '出勤時間', '退勤時間', '勤務時間', '時', '分', '給与']]
-    df.to_csv('kintai_mari_ver2.csv',index=False,encoding='utf_8_sig')
+    df.to_csv('./勤怠表/kintai_mari_ver2.csv',index=False,encoding='utf_8_sig')
 
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('./勤怠表/kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df['勤務時間']=df['勤務時間'].astype(float)
     df=df.set_index('日付')
@@ -105,7 +105,7 @@ if btn_touroku:
     st.dataframe(df,800,1000) 
 
 if btn_hyouji:
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('./勤怠表/kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df['勤務時間']=df['勤務時間'].astype(float)
     df = df.fillna(0)
@@ -125,7 +125,7 @@ if btn_hyouji:
     st.dataframe(df_hyouji,800,1130) 
 
 if btn_hyouji_shitei:
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('./勤怠表/kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df['勤務時間']=df['勤務時間'].astype(float)
     df=df.set_index('日付')
@@ -145,7 +145,7 @@ if btn_hyouji_shitei:
     st.dataframe(df_hyouji_shitei,800,1130)
 
 if btn_result_shitei:
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('./勤怠表/kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df=df.set_index('日付')
     df=df[['勤務時間']]
@@ -159,7 +159,7 @@ if btn_result_shitei:
     start_date,'から',finish_date,'までの合計勤務時間は、:',df_result_shitei,'時間です。'
     start_date,'から',finish_date,'までの合計勤務時間は、：',df_result_shitei_ji,'時間',df_result_shitei_fun,'分です。'
     
-    df = pd.read_csv('kintai_mari_ver2.csv',parse_dates=['日付'])
+    df = pd.read_csv('./勤怠表/kintai_mari_ver2.csv',parse_dates=['日付'])
     df['日付']=pd.to_datetime(df['日付'],format='%Y-%m-%d')
     df=df.set_index('日付')
     df=df[['給与']]
